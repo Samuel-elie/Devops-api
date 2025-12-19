@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: devops-api-svc
+  namespace: devops-demo
+spec:
+  selector:
+    app: devops-api
+  ports:
+    - name: http
+      port: 3000        # port "interne" du service
+      targetPort: 3000  # port du conteneur
+ #     nodePort: 30080   # port ouvert sur la machine kind
+      protocol: TCP
+  type: ClusterIP
+#  type: NodePort

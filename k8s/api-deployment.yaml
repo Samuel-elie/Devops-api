@@ -1,0 +1,87 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: devops-api
+  namespace: devops-demo
+spec:
+  replicas: 2
+
+  # -------------------------------------------------------------------
+  # AJOUT (pro) : RollingUpdate
+  # -------------------------------------------------------------------
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+
+  selector:
+    matchLabels:
+      app: devops-api
+  template:
+    metadata:
+      labels:
+        app: devops-api
+    spec:
+      containers:
+        - name: devops-api
+          image: devops-api:1.0.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3000
+
+          # -------------------------------------------------------------------
+          # ANCIENNE CONFIG (en dur) - TRACES
+          # -------------------------------------------------------------------
+          # env:
+          #   - name: NODE_ENV
+          #     value: "production"
+          #   - name: MONGO_URL
+          #     value: "mongodb://devops:devops@mongo-svc:27017/devopsdb?authSource=admin"
+
+          # -------------------------------------------------------------------
+          # NOUVELLE CONFIG (pro) - ConfigMap + Secret
+          # -------------------------------------------------------------------
+          envFrom:
+            - configMapRef:
+                name: devops-api-config
+            - secretRef:
+                name: devops-api-secret
+
+          # On reconstruit MONGO_URL sans écrire user/pass en dur dans le YAML
+          env:
+            - name: MONGO_URL
+              value: "mongodb://$(MONGO_USER):$(MONGO_PASSWORD)@$(MONGO_HOST):$(MONGO_PORT)/$(MONGO_DB)?authSource=$(MONGO_AUTH_SOURCE)"
+
+          # -------------------------------------------------------------------
+          # AJOUT (pro) : Readiness / Liveness
+          # -------------------------------------------------------------------
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 2
+            failureThreshold: 3
+
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 25
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
+
+          # -------------------------------------------------------------------
+          # AJOUT (pro) : Resources requests/limits
+          # -------------------------------------------------------------------
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+

@@ -1,0 +1,31 @@
+services:
+  api:
+    build: .
+    container_name: devops-api
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    depends_on:
+      - mongo
+      - redis
+
+  mongo:
+    image: mongo:7
+    container_name: devops-mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  redis:
+    image: redis:7
+    container_name: devops-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+
+volumes:
+  mongo_data:
