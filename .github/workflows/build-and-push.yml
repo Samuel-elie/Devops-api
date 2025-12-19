@@ -29,5 +29,9 @@ jobs:
           context: .
           push: true
           tags: |
-            ghcr.io/${{ github.repository }}/devops-api:latest
-            ghcr.io/${{ github.repository }}/devops-api:${{ github.sha }}
+            ghcr.io/samuel-elie/devops-api/devops-api:latest
+            ghcr.io/samuel-elie/devops-api/devops-api:${{ github.sha }}
+
+            # ANCIEN (KO) : github.repository contient des MAJUSCULES => GHCR refuse
+            # ghcr.io/${{ github.repository }}/devops-api:latest
+            # ghcr.io/${{ github.repository }}/devops-api:${{ github.sha }}
