@@ -28,9 +28,15 @@ jobs:
         with:
           context: .
           push: true
+# ✅ NOUVEAU (OK) : ghcr.io/<owner>/<repo>:tag
           tags: |
-            ghcr.io/samuel-elie/devops-api/devops-api:latest
-            ghcr.io/samuel-elie/devops-api/devops-api:${{ github.sha }}
+            ghcr.io/samuel-elie/devops-api:latest
+            ghcr.io/samuel-elie/devops-api:${{ github.sha }}
+            
+          # ❌ ANCIEN (à garder en commentaire) : chemin trop profond
+          # tags: |
+            # ghcr.io/samuel-elie/devops-api/devops-api:latest
+            # ghcr.io/samuel-elie/devops-api/devops-api:${{ github.sha }}
 
             # ANCIEN (KO) : github.repository contient des MAJUSCULES => GHCR refuse
             # ghcr.io/${{ github.repository }}/devops-api:latest
