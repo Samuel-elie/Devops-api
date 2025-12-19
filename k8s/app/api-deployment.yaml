@@ -25,8 +25,14 @@ spec:
     spec:
       containers:
         - name: devops-api
-          image: devops-api:1.0.0
-          imagePullPolicy: IfNotPresent
+ #  NOUVEAU
+          image: ghcr.io/samuel-elie/devops-api:latest
+          imagePullPolicy: Always
+#          image: devops-api:1.0.0
+#          imagePullPolicy: IfNotPresent
+#  ANCIEN (à garder en commentaire)
+          # image: ghcr.io/samuel-elie/devops-api/devops-api:latest
+          # imagePullPolicy: Always
           ports:
             - containerPort: 3000
 
