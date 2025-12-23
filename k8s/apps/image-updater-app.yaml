@@ -5,13 +5,19 @@ metadata:
   namespace: argocd
 spec:
   project: default
-  source:
-    repoURL: https://github.com/Samuel-elie/Devops-api.git
-    targetRevision: main
-    path: k8s/infra/image-updater
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd
+  source:
+    repoURL: https://argoproj.github.io/argo-helm
+    chart: argocd-image-updater
+    targetRevision: 0.11.0   # ou latest stable
+    helm:
+      values: |
+        config:
+          logLevel: info
+        authScripts:
+          enabled: true
   syncPolicy:
     automated:
       prune: true
