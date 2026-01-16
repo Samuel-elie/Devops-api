@@ -3,6 +3,8 @@ kind: Service
 metadata:
   name: devops-api-svc
   namespace: devops-demo
+  labels:
+     app: devops-api
 spec:
   selector:
     app: devops-api
