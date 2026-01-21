@@ -1,0 +1,19 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: devops-api-alerts
+  namespace: observability
+  labels:
+    release: kube-prom-stack
+spec:
+  groups:
+    - name: devops-api.rules
+      rules:
+        - alert: DevOpsApiDown
+          expr: up{job="devops-api"} == 0
+          for: 1m
+          labels:
+            severity: critical
+          annotations:
+            summary: "DevOps API is DOWN"
+            description: "The DevOps API has not been responding for more than 1 minute."
