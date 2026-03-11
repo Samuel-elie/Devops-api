@@ -1,21 +1,29 @@
-# Dockerfile pour l'API Express (Ubuntu 22.04 comme hôte, mais image Node alpine)
 FROM node:20-alpine
 
-# Dossier de travail dans le conteneur
+# Créer un utilisateur non-root
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+
+# Dossier de travail
 WORKDIR /usr/src/app
 
-# Copier uniquement les fichiers de dépendances pour optimiser le cache
+# Copier les fichiers de dépendances
 COPY package*.json ./
 
-# Installer les dépendances en mode production
-RUN npm install --only=production
+# Installer uniquement les dépendances de prod
+RUN npm ci --omit=dev
 
-# Copier le reste du code
-COPY . .
+# Copier le code utile
+COPY src ./src
 
-# Variables d'environnement par défaut
+# Donner les droits au user non-root
+RUN chown -R appuser:appgroup /usr/src/app
+
+# Variables d'environnement
 ENV PORT=3000
 ENV NODE_ENV=production
+
+# Utilisateur non-root
+USER appuser
 
 # Exposer le port
 EXPOSE 3000

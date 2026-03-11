@@ -1,0 +1,8 @@
+node_modules
+.git
+.github
+k8s
+devops-api.tar
+docker-compose.yml
+README.md
+.env
