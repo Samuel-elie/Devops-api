@@ -1,0 +1,18 @@
+{{- if .Values.mongo.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo-svc
+  # namespace: {{ .Values.namespace }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: mongo
+spec:
+  selector:
+    app: mongo
+  ports:
+    - name: mongo
+      port: {{ .Values.mongo.port }}
+      targetPort: {{ .Values.mongo.port }}
+      protocol: TCP
+{{- end }}

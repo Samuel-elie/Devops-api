@@ -1,0 +1,19 @@
+{{- if .Values.mongo.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo
+  # namespace: {{ .Values.namespace }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: mongo
+spec:
+  clusterIP: None
+  selector:
+    app: mongo
+  ports:
+    - name: mongo
+      port: {{ .Values.mongo.port }}
+      targetPort: {{ .Values.mongo.port }}
+      protocol: TCP
+{{- end }}

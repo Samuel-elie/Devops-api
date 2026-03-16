@@ -1,0 +1,58 @@
+replicaCount: 2
+
+#On va arreter de fixer le namespace ici pour pouvoir creer de nouveaux namespace sans avoir a toucher ici et dans les fichiers on va utiliser namespace: {{ .Release.Namespace }} au lieu de namespace: {{ .Values.namespace }}
+# namespace: devops-demo
+
+image:
+  repository: ghcr.io/samuel-elie/devops-api
+  tag: latest
+  pullPolicy: Always
+
+service:
+  type: ClusterIP
+  port: 3000
+
+ingress:
+  enabled: true
+  className: public
+  host: api.devops.local
+  path: /
+  pathType: Prefix
+  clusterIssuer: selfsigned-issuer
+
+config:
+  NODE_ENV: production
+  MONGO_HOST: mongo
+  MONGO_PORT: "27017"
+  MONGO_DB: devopsdb
+  # MONGO_AUTH_SOURCE: devopsdb
+  MONGO_AUTH_SOURCE: admin
+  REDIS_HOST: redis-svc
+  REDIS_PORT: "6379"
+
+secret:
+  MONGO_USER: devopsuser
+  MONGO_PASSWORD: devopspass
+  JWT_SECRET: change_me_very_long_secret
+
+mongo:
+  enabled: true
+  image: mongo:6
+  port: 27017
+  storage: 5Gi
+
+redis:
+  enabled: true
+  image: redis:7-alpine
+  port: 6379
+  
+networkPolicy:
+  enabled: true 
+
+resources:
+  requests:
+    cpu: "100m"
+    memory: "128Mi"
+  limits:
+    cpu: "500m"
+    memory: "512Mi"
