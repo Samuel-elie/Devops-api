@@ -18,4 +18,4 @@ USER 10001:10001
 
 EXPOSE 3000
 
-CMD ["node", "src/server.js"]
+CMD ["node", "--require", "./src/otel.js", "src/server.js"]
