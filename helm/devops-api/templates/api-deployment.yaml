@@ -44,6 +44,10 @@ spec:
           env:
             - name: MONGO_URL
               value: "mongodb://$(MONGO_USER):$(MONGO_PASSWORD)@$(MONGO_HOST):$(MONGO_PORT)/$(MONGO_DB)?authSource=$(MONGO_AUTH_SOURCE)"
+            - name: OTEL_SERVICE_NAME
+              value: devops-api
+            - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+              value: http://tempo.observability:4318/v1/traces
 
           readinessProbe:
             httpGet:
