@@ -3,7 +3,6 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: mongo
-  # Namespace piloté par Helm release
   namespace: {{ .Release.Namespace }}
 spec:
   serviceName: mongo
@@ -16,11 +15,9 @@ spec:
       labels:
         app: mongo
     spec:
-      # Sécurité Pod
       securityContext:
         seccompProfile:
           type: RuntimeDefault
-
       containers:
         - name: mongo
           image: {{ .Values.mongo.image | quote }}
@@ -29,15 +26,11 @@ spec:
             - name: mongo
               containerPort: {{ .Values.mongo.port }}
 
-          # Hardening prudent :
-          # On ajoute les protections sûres sans imposer tout de suite
-          # runAsNonRoot/readOnlyRootFilesystem, car l'image officielle Mongo
-          # peut casser selon son entrypoint et son init.
           securityContext:
             allowPrivilegeEscalation: false
-            # capabilities:
-              # drop:
-                # - ALL
+            capabilities:
+              drop:
+                - ALL
 
           env:
             - name: MONGO_INITDB_ROOT_USERNAME
