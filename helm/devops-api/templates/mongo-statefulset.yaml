@@ -15,9 +15,6 @@ spec:
       labels:
         app: mongo
     spec:
-      securityContext:
-        seccompProfile:
-          type: RuntimeDefault
       containers:
         - name: mongo
           image: {{ .Values.mongo.image | quote }}
@@ -25,12 +22,6 @@ spec:
           ports:
             - name: mongo
               containerPort: {{ .Values.mongo.port }}
-
-          securityContext:
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop:
-                - ALL
 
           env:
             - name: MONGO_INITDB_ROOT_USERNAME
