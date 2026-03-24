@@ -3,7 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: redis
-  # namespace: {{ .Values.namespace }}
+  # Namespace piloté par Helm release
   namespace: {{ .Release.Namespace }}
 spec:
   replicas: 1
@@ -15,6 +15,11 @@ spec:
       labels:
         app: redis
     spec:
+      # Sécurité Pod
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+
       containers:
         - name: redis
           image: {{ .Values.redis.image | quote }}
@@ -22,4 +27,32 @@ spec:
           ports:
             - name: redis
               containerPort: {{ .Values.redis.port }}
+
+          # Sécurité container Redis
+          # On force un exécutable non-root + drop ALL + RO filesystem.
+          # /data et /tmp sont montés en volumes écriture.
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 10001
+            runAsGroup: 10001
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+
+          volumeMounts:
+            - name: redis-data
+              mountPath: /data
+            - name: redis-tmp
+              mountPath: /tmp
+
+          resources:
+{{ toYaml .Values.redis.resources | indent 12 }}
+
+      volumes:
+        - name: redis-data
+          emptyDir: {}
+        - name: redis-tmp
+          emptyDir: {}
 {{- end }}

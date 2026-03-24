@@ -2,7 +2,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Release.Name }}
-  # namespace: {{ .Values.namespace }}
+  # On ne fixe plus le namespace dans values.yaml.
+  # On laisse Helm utiliser le namespace du release.
   namespace: {{ .Release.Namespace }}
 spec:
   replicas: {{ .Values.replicaCount }}
@@ -20,6 +21,14 @@ spec:
         app: {{ .Release.Name }}
     spec:
       serviceAccountName: {{ .Release.Name }}-sa
+
+      # Sécurité au niveau Pod :
+      # - seccomp RuntimeDefault
+      # - protection de base contre certains appels système dangereux
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+
       containers:
         - name: {{ .Release.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -27,10 +36,17 @@ spec:
           ports:
             - containerPort: {{ .Values.service.port }}
 
+          # Sécurité au niveau container :
+          # - non-root obligatoire
+          # - UID/GID explicites pour satisfaire Kubernetes + Trivy
+          # - aucune capability Linux par défaut
+          # - root filesystem en lecture seule
           securityContext:
+            runAsNonRoot: true
+            runAsUser: 10001
+            runAsGroup: 10001
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
-            runAsNonRoot: true
             capabilities:
               drop:
                 - ALL
