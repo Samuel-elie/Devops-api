@@ -1,0 +1,17 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - np-default-deny.yaml
+  - np-allow-ingress-to-api.yaml
+  - np-allow-api-egress.yaml
+  - np-allow-api-to-mongo.yaml
+  - np-allow-api-to-redis.yaml
+  - kyverno/policy-no-latest.yaml
+  - kyverno/policy-no-root.yaml
+  - kyverno/policy-resources.yaml
+  - kyverno/policy-readonly-rootfs.yaml
+  - kyverno/policy-no-privilege-escalation.yaml
+  - kyverno/policy-drop-all-capabilities.yaml
+  - kyverno/policy-seccomp-runtime-default.yaml
+  - kyverno/policy-required-labels.yaml

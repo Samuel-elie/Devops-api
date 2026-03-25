@@ -1,0 +1,17 @@
+- name: Check if Docker is already installed
+  command: docker --version
+  register: docker_check
+  ignore_errors: true
+  changed_when: false
+
+- name: Install docker.io only if Docker is not already installed
+  apt:
+    name: docker.io
+    state: present
+  when: docker_check.rc != 0
+
+- name: Ensure Docker service is started
+  service:
+    name: docker
+    state: started
+    enabled: true

@@ -1,0 +1,11 @@
+- name: Install MicroK8s
+  snap:
+    name: microk8s
+    classic: true
+    state: present
+
+- name: Add current user to microk8s group
+  user:
+    name: samuel
+    groups: microk8s
+    append: true

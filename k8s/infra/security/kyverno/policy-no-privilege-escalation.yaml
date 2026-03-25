@@ -1,0 +1,19 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: disallow-privilege-escalation
+spec:
+  validationFailureAction: Enforce
+  rules:
+    - name: check-allow-privilege-escalation
+      match:
+        resources:
+          kinds:
+            - Pod
+      validate:
+        message: "Containers must set allowPrivilegeEscalation to false"
+        pattern:
+          spec:
+            containers:
+              - securityContext:
+                  allowPrivilegeEscalation: false

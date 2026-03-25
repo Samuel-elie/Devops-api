@@ -1,0 +1,8 @@
+- name: Prepare DevOps host
+  hosts: devops
+  become: true
+  roles:
+    - common
+    - docker
+    - microk8s
+    - helm

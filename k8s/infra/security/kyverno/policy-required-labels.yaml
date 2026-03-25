@@ -1,0 +1,22 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-standard-labels
+spec:
+  validationFailureAction: Audit
+  rules:
+    - name: check-standard-labels
+      match:
+        resources:
+          kinds:
+            - Deployment
+            - StatefulSet
+            - Service
+            - Ingress
+      validate:
+        message: "app.kubernetes.io/name and app.kubernetes.io/managed-by labels are required"
+        pattern:
+          metadata:
+            labels:
+              app.kubernetes.io/name: "?*"
+              app.kubernetes.io/managed-by: "?*"
