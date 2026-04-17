@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-api-config
+  namespace: {{ .Release.Namespace }}
+data:
+  NODE_ENV: {{ .Values.config.api.NODE_ENV | quote }}
+  PORT: {{ .Values.config.api.PORT | quote }}
+  FRONTEND_URL: {{ .Values.config.api.FRONTEND_URL | quote }}
+  JWT_ACCESS_EXPIRES_IN: {{ .Values.config.api.JWT_ACCESS_EXPIRES_IN | quote }}
+  JWT_REFRESH_EXPIRES_IN: {{ .Values.config.api.JWT_REFRESH_EXPIRES_IN | quote }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-web-config
+  namespace: {{ .Release.Namespace }}
+data:
+  NODE_ENV: {{ .Values.config.web.NODE_ENV | quote }}
+  PORT: {{ .Values.config.web.PORT | quote }}
+  NEXT_PUBLIC_API_URL: {{ .Values.config.web.NEXT_PUBLIC_API_URL | quote }}
