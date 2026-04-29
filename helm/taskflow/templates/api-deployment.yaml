@@ -54,6 +54,15 @@ spec:
                 name: {{ .Release.Name }}-api-config
             - secretRef:
                 name: {{ .Release.Name }}-api-secret
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.api.port }}
+
+          env:
+            - name: OTEL_SERVICE_NAME
+              value: "taskflow-api"
+            - name: OTEL_EXPORTER_OTLP_TRACES_ENDPOINT
+              value: "http://tempo.observability:4318/v1/traces"
 
           readinessProbe:
             tcpSocket:

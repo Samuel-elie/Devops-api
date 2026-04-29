@@ -5,7 +5,7 @@ replicaCount:
 image:
   api:
     repository: ghcr.io/samuel-elie/taskflow-api
-    tag: "1.0.0"
+    tag: "1.0.2"
     pullPolicy: IfNotPresent
   web:
     repository: ghcr.io/samuel-elie/taskflow-web
@@ -23,7 +23,9 @@ service:
 ingress:
   enabled: true
   className: public
-  clusterIssuer: selfsigned-issuer
+
+  # Pour l’instant on reste simple en HTTP.
+  # On remettra cert-manager / TLS plus tard quand tout sera stable.
   hosts:
     web: taskflow.local
     api: api.taskflow.local
@@ -32,21 +34,35 @@ config:
   api:
     NODE_ENV: production
     PORT: "3001"
-    FRONTEND_URL: https://taskflow.local
+
+    # Important :
+    # Le frontend réel accède à l’API via cette URL publique.
+    # On met http pour éviter le "Failed to fetch" lié à https non configuré.
+    FRONTEND_URL: "http://taskflow.local"
+
+    # Durées JWT non sensibles => ConfigMap
     JWT_ACCESS_EXPIRES_IN: "15m"
-    JWT_REFRESH_EXPIRES_IN: "7d"    
+    JWT_REFRESH_EXPIRES_IN: "7d"
+
   web:
     NODE_ENV: production
     PORT: "3000"
-    NEXT_PUBLIC_API_URL: https://api.taskflow.local
+
+    # Important :
+    # Next.js doit appeler l’API publique exposée par l’Ingress.
+    # On met http pour l’instant.
+    NEXT_PUBLIC_API_URL: "http://api.taskflow.local"
 
 secret:
+  # false = Helm/ArgoCD ne crée pas le secret
+  # On suppose que taskflow-api-secret existe déjà dans le namespace taskflow-dev
   create: false
+
   api:
     DATABASE_URL: "replace-me"
     JWT_ACCESS_SECRET: "replace-me"
     JWT_REFRESH_SECRET: "replace-me"
-    
+
 resources:
   api:
     requests:
@@ -55,6 +71,7 @@ resources:
     limits:
       cpu: "500m"
       memory: "512Mi"
+
   web:
     requests:
       cpu: "100m"
